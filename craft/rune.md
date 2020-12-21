@@ -50,4 +50,4 @@
 ||Джехаде (ориг. Jehade)|	Снятие|	        Превосходный (ориг. Superb)|	              Уровень Чемпиона.png 150|
 ||Итаде (ориг. Itade)|	  Похищение|      Поистине Превосходный (ориг. Truly Superb)| Уровень Чемпиона.png 160|
 
-Источник: (https://elderscrolls.fandom.com/ru/wiki/Руны)[https://elderscrolls.fandom.com/ru/wiki/Руны]
+Источник: <a href="https://elderscrolls.fandom.com/ru/wiki/Руны">https://elderscrolls.fandom.com/ru/wiki/Руны</a>
