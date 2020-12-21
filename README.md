@@ -6,13 +6,7 @@
 
 [DPS](video/#dps) - Помощь в расчете и апе DPS
 
-
-
-<a href="https://www.youtube.com/watch?v=zCpZOHixRf0" target="_blink">TESO DD Лекция</a><br>
-<a href="https://www.youtube.com/watch?v=nxelWisBP7k" target="_blink">Как приручить скелета</a><br>
-<a href="https://youtu.be/e_H6f2xjM6M" target="_blink">nCR нор. Клаудрест DLC Саммерсет 0+</a><br>
-<a href="https://www.youtube.com/watch?v=X5fakEvkKTg" target="_blink">vMoL Пасть Лорхаджа</a><br>
-
+[Dunge](video/#dunge) - Данжи нормал/ветеранка и как их проходить
 
 ## Craft
 
