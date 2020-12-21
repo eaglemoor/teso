@@ -8,4 +8,10 @@ Damage build [https://www.youtube.com/watch?v=zCpZOHixRf0](https://www.youtube.c
 
 
 ## Craft
+
 [Руны](craft/rune.md)
+
+## Addons
+
+<img src="https://minion.mmoui.com/favicon.ico"> [Minion](https://minion.mmoui.com/) - Менеджер аддонов. Позволяет удобно искать и устанавливать аддоны с официальных источников без поиска по сайтам.
+
