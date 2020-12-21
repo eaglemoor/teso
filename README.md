@@ -1,8 +1,8 @@
 # TESO information
 
-Damage build https://www.youtube.com/watch?v=zCpZOHixRf0
+Damage build [https://www.youtube.com/watch?v=zCpZOHixRf0](https://www.youtube.com/watch?v=zCpZOHixRf0)
 
-Как приручить скелета https://www.youtube.com/watch?v=nxelWisBP7k
+Как приручить скелета [https://www.youtube.com/watch?v=nxelWisBP7k](https://www.youtube.com/watch?v=nxelWisBP7k)
 
 
 ## Craft
