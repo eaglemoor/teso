@@ -1,10 +1,12 @@
 <img src="https://repository-images.githubusercontent.com/323083310/069c6400-4396-11eb-952c-23579625d10a" />
 
-# TESO information
+# The Elder Scrolls Online
 
-Damage build [https://www.youtube.com/watch?v=zCpZOHixRf0](https://www.youtube.com/watch?v=zCpZOHixRf0)
+## [Video](video/README.md)
 
-Как приручить скелета [https://www.youtube.com/watch?v=nxelWisBP7k](https://www.youtube.com/watch?v=nxelWisBP7k)
+[TESO DD Лекция](https://www.youtube.com/watch?v=zCpZOHixRf0)<br>
+[Как приручить скелета](https://www.youtube.com/watch?v=nxelWisBP7k)<br>
+[nCR нор. Клаудрест DLC Саммерсет 0+](https://youtu.be/e_H6f2xjM6M)<br>
 
 
 ## Craft
