@@ -2,7 +2,11 @@
 
 # [The Elder Scrolls Online](http://webspirit.pro)
 
-## [Video](video/README.md)
+## Video
+
+[DPS](video/#dps) - Помощь в расчете и апе DPS
+
+
 
 <a href="https://www.youtube.com/watch?v=zCpZOHixRf0" target="_blink">TESO DD Лекция</a><br>
 <a href="https://www.youtube.com/watch?v=nxelWisBP7k" target="_blink">Как приручить скелета</a><br>
