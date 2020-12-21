@@ -12,3 +12,6 @@
 
 **nCR** нор. Клаудрест DLC Саммерсет 0+ - <a href="https://youtu.be/e_H6f2xjM6M" target="_blank">https://youtu.be/e_H6f2xjM6M</a>
 > Видео обзор по механикам и прохождению данжа **nCR** нор. Клаудрест DLC Саммерсет 0+
+
+**vMoL** Пасть Лорхаджа - <a href="https://www.youtube.com/watch?v=X5fakEvkKTg" target="_blink">https://www.youtube.com/watch?v=X5fakEvkKTg</a>
+> Обзор по механике и прохождению ветеранского данжа **vMoL** Пасть Лорхаджа
