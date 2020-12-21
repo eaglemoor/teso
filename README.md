@@ -15,5 +15,5 @@
 
 ## Addons
 
-<img src="https://minion.mmoui.com/favicon.ico"> [Minion](https://minion.mmoui.com/) - Менеджер аддонов. Позволяет удобно искать и устанавливать аддоны с официальных источников без поиска по сайтам.
+<img src="https://minion.mmoui.com/favicon.ico"> <a href="https://minion.mmoui.com/" target="_blank">Minion</a> - Менеджер аддонов. Позволяет удобно искать и устанавливать аддоны с официальных источников без поиска по сайтам.
 
