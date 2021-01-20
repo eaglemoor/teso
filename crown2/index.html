@@ -1,1 +1,39 @@
-Test
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+        <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+    <body>        
+        <div id="app">
+            <b-container class="userids">
+              <b-row>
+                <b-col>
+                  <b-form-input placeholder="UserID ваш"></b-form-input>
+                </b-col>
+                <b-col>
+                  <b-form-input placeholder="UserID кому доставить"></b-form-input>
+                </b-col>
+              </b-row>
+            </b-container>
+            <b-container class="search">
+              <b-form-input v-model="text" placeholder="Поиск..."></b-form-input>
+              <div class="mt-2">Value: {{ text }}</div>
+            </b-container>
+            <b-container class="items">
+              <ul>
+                <li v-for="item in items" :key="item.key" class="panel-block">
+                    {{item.nameRU}}
+                </li>
+              </ul>
+            </b-container>
+            <b-container class="button">
+              <b-button>Оформить заказ</b-button>
+            </b-container>
+          </div>
+            
+        <script src="index.js"></script>
+    </body>
+</html>
