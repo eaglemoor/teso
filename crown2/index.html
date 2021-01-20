@@ -8,11 +8,12 @@
   <script src="https://unpkg.com/vue@latest/dist/vue.min.js"></script>
   <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vuex@3.6.0/dist/vuex.js"></script>
 </head>
 
 <body class="bg-light">
   <div class="container">
-    <main>
+    <main id="app">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="banner.png" style="width: 100%;height: 240px;">
       </div>
@@ -21,37 +22,29 @@
         <div class="col-md-5 col-lg-4 order-md-last">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="">Ваш заказ</span>
-            <span class="badge bg-secondary rounded-pill">3</span>
+            <span class="badge bg-secondary rounded-pill">{{count}}</span>
           </h4>
           <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Кронный ящик x1</h6>
-                <small class="text-muted">Кронный ящик Акавирского Потентата</small>
+            <li class="list-group-item d-flex justify-content-between lh-sm" v-for="item in selectedItems" :key="item.id">
+              <div :class="{ 'text-success': item.discont}">
+                <h6 class="my-0">{{item.nameRU}}</h6>
+                <small :class="{'text-success': item.discont, 'text-muted': !item.discont}">{{item.nameRU}}</small>
 
-                <small style="display: block;padding-top: 0.5em;"><a href="#" class="link-danger">Удалить</a></small>
+                <small style="display: block;padding-top: 0.5em;"><a href="#" class="link-danger" @click="() => del(item)">Удалить</a></small>
               </div>
-
-              <span class="text-muted" style="white-space: nowrap;">👑400</span>
-
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div class="text-success">
-                <h6 class="my-0">Банкир</h6>
-                <small class="text-success">Эзаби Банкир</small>
-              </div>
-
-              <span class="text-success" style="white-space: nowrap;text-align: right;">👑4250<br>
-                <small><del>5000</del></small>
+              
+              <span class="text-muted" style="white-space: nowrap;text-align: right;">👑{{item.discont || item.price}}
+                <br v-if="item.discont">
+                <small v-if="item.discont"><del>{{item.price}}</del></small>
               </span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
+            </li>            
+            <!-- <li class="list-group-item d-flex justify-content-between lh-sm">
               <div>
                 <h6 class="my-0">DLC</h6>
                 <small class="text-muted">Расширение Цифровое Имперское издание</small>
               </div>
               <span class="text-muted" style="white-space: nowrap;">👑2100</span>
-            </li>
+            </li> -->
             <li class="list-group-item d-flex justify-content-between bg-light">
               <div class="text-success">
                 <h6 class="my-0">Promo code</h6>
@@ -61,12 +54,12 @@
             </li>
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (👑)</span>
-              <strong>6 650</strong>
+              <strong>{{totalPrice}}</strong>
             </li>
 
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total (💰) <small>6650х490</small></span>
-              <strong>3 253 600</strong>
+              <span>Total (💰) <small>{{totalPrice}}х490</small></span>
+              <strong>{{totalPrice * 490}}</strong>
             </li>
           </ul>
 
@@ -104,31 +97,33 @@
                 </div>
               </div>
 
-              <div class="col-12">
-                <div class="bd-search position-relative me-auto" id="search">
-                  <span class="algolia-autocomplete"
-                    style="position: relative; display: inline-block; direction: ltr;width: 100%;"><input type="search"
-                      class="form-control ds-input" id="search-input" placeholder="Поиск..."
-                      aria-label="Search docs for..." autocomplete="off" data-bd-docs-version="5.0" spellcheck="false"
-                      role="combobox" aria-autocomplete="list" aria-expanded="false"
-                      aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                      style="position: relative; vertical-align: top;"><span class="ds-dropdown-menu" role="listbox"
-                      id="algolia-autocomplete-listbox-0"
-                      style="position: absolute; top: 100%; z-index: 100; left: 0px; right: auto; display: none;">
-                      <div class="ds-dataset-1"></div>
-                    </span></span>
-                </div>
-
-              </div>
-
-              <div class="col-12">
-                <div class="row" style="position: relative;padding-left: 50%;margin-bottom: 1em;">
-                  <div class="spinner-border text-info" role="status">
-                    <span class="visually-hidden">Loading...</span>
+              <div id="cardlist">
+                <div class="col-12">
+                  <div class="bd-search position-relative me-auto" id="search">
+                    <span class="algolia-autocomplete"
+                      style="position: relative; display: inline-block; direction: ltr;width: 100%;"><input type="search"
+                        v-model="searchQuery"
+                        class="form-control ds-input" id="search-input" placeholder="Поиск..."
+                        aria-label="Search docs for..." autocomplete="off" data-bd-docs-version="5.0" spellcheck="false"
+                        role="combobox" aria-autocomplete="list" aria-expanded="false"
+                        aria-owns="algolia-autocomplete-listbox-0" dir="auto"
+                        style="position: relative; vertical-align: top;"><span class="ds-dropdown-menu" role="listbox"
+                        id="algolia-autocomplete-listbox-0"
+                        style="position: absolute; top: 100%; z-index: 100; left: 0px; right: auto; display: none;">
+                        <div class="ds-dataset-1"></div>
+                      </span></span>
                   </div>
+
                 </div>
 
-                <div id="cardlist">
+                <div class="col-12">
+                  <div class="row" style="position: relative;padding-left: 50%;margin-bottom: 1em;">
+                    <div class="spinner-border text-info" role="status" v-show="hasNotItems">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+
+                
                   <div class="card mb-3" v-for="item in items" :key="item.key">
                     <div class="row g-0">
                       <div class="col-md-4 card-image">
@@ -140,14 +135,14 @@
                           <p class="card-text">{{item.nameRU}}<br>{{item.nameEN}}</p>
                           <p class="card-text"><small class="text-muted">Цена:&nbsp;👑
                               <span v-if="item.discont">
-                                <del>{{item.discont}}</del>
-                                <strong class="text-success">{{item.price}}</strong>
+                                <del>{{item.price}}</del>
+                                <strong class="text-success">{{item.discont}}</strong>
                               </span>
                               <span v-else>
                                 {{item.price}}
                               </span>
                             </small></p>
-                          <a href="#" class="btn btn-primary">Добавить в конзину</a>
+                          <b-button variant="primary" @click="() => add(item)">Добавить в конзину</b-button>
                         </div>
                       </div>
                     </div>
