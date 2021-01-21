@@ -102,7 +102,7 @@ const store = new Vuex.Store({
         commit("setMessage", resp.data.message);
       } catch (err) { // если неуспешный, востановить корзину, написать ошибку
         state.items.splice(0, state.items.length, ...items);
-        throw err;
+        store.commit("setMessage", err);
       }
     }
   }
@@ -156,14 +156,10 @@ var app = new Vue({
     del(item) {
       store.dispatch('del', item.id);
     },
-    async buy() {
-      try {
-        await store.dispatch('checkout');
-        this.modalShow = true;
-      } catch (err) {
-        this.modalShow = true;
-        store.commit("setMessage", err);
-      }
+    buy() {
+      store.commit("setMessage", "Подождите, заказ в работе!");
+      store.dispatch('checkout');
+      this.modalShow = true;
     }
   },
   async mounted() {
