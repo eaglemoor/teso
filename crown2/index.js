@@ -46,8 +46,8 @@ const store = new Vuex.Store({
   actions: {
     async update({ commit }, keys) {
       items = []
-      totalCrown = {}
-      totalGold = {}
+      totalCrown = emptyTotalCrown;
+      totalGold = emptyTotalGold;
       if (keys.length) {
         const newPost = {
           fromUserID: 'EagleMoor',
@@ -60,8 +60,8 @@ const store = new Vuex.Store({
         totalGold = resp.data.totalGold;
       }
       commit("updateItems", items);
-      commit("updateTotalCrown", emptyTotalCrown);
-      commit("updateTotalGold", emptyTotalGold);
+      commit("updateTotalCrown", totalCrown);
+      commit("updateTotalGold", totalGold);
     },
 
     async add({ dispatch, state }, key) {      
