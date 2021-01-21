@@ -90,6 +90,10 @@ const store = new Vuex.Store({
       // очистить корзину
       state.items.splice(0, state.items.length);
       keys = items.map(item => item.key);
+      savedTotalCrown = Object.assign({}, state.totalCrown);
+      savedTotalGold = Object.assign({}, state.totalGold);
+      state.totalCrown = emptyTotalCrown;
+      state.totalGold = emptyTotalGold;
       // отправить запрос
       const newPost = {
         fromUserID: 'EagleMoor',
@@ -102,6 +106,8 @@ const store = new Vuex.Store({
         commit("setMessage", resp.data.message);
       } catch (err) { // если неуспешный, востановить корзину, написать ошибку
         state.items.splice(0, state.items.length, ...items);
+        state.totalCrown = savedTotalCrown;
+        state.totalGold = savedTotalGold;
         store.commit("setMessage", err);
       }
     }
