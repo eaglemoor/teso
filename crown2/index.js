@@ -2,18 +2,68 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    count: 0,
-    curId: 0,
-    items: []
+    items: [],
+    totalCrown: {
+      Title: "Total (👑)",
+      Description: "",
+      Price: 0
+    },
+    totalGold: {
+      Title: "Total (💰)",
+      Description: "",
+      Price: 0
+    }
   },
   mutations: {
-    add: (state, item) => {
-      item.id = state.curId++;
-      state.items.push(item);
+    del({ items }, id) {
+      const i = items.map(item => item.id).indexOf(id);
+      items.splice(i, 1);
     },
-    del: (state, id) => {
-      const i = state.items.map(item => item.id).indexOf(id);
-      state.items.splice(i, 1);
+    
+    updateItems(state, items) {
+      state.items.splice(0, state.items.length, ...items);
+      curId = 0
+      state.items.forEach(element => element.id = curId++);
+    },
+
+    updateTotalCrown(state, totalCrown) {
+      state.totalCrown = totalCrown;
+    },
+
+    updateTotalGold(state, totalGold) {
+      state.totalGold = totalGold;
+    }
+  },
+  actions: {
+    async update({ commit }, keys) {
+      const newPost = {
+        fromUserID: 'EagleMoor',
+        toUserID: 'Kaba4ok',
+        items: keys,
+      };
+      const resp = await axios.post('https://avalonbot.teso.world/crown/basket/', newPost);
+      commit("updateItems", resp.data.items);
+      commit("updateTotalCrown", resp.data.totalCrown);
+      commit("updateTotalGold", resp.data.totalGold);
+    },
+
+    async add({ dispatch, state }, key) {      
+      keys = [...state.items.map(item => item.key), key];
+      try {
+        dispatch("update", keys);
+      } catch (err) {
+        console.error(err);
+      } 
+    },
+
+    async del({ dispatch, state }, id) {
+      keys = state.items.map(item => item.key);
+      keys.splice(id, 1);
+      try {
+        dispatch("update", keys);
+      } catch (err) {
+        console.error(err);
+      } 
     }
   }
 })
@@ -49,40 +99,30 @@ var app = new Vue({
     selectedItems() {
       return store.state.items;
     },
-    totalPrice() {
-      total = 0;
-      allPrice = store.state.items.map(item => item.discont || item.price);
-      if (allPrice.length) {
-        total = allPrice.reduce((a,b) => a + b);
-        total += this.promoDiscont;
-        if (total < 0) {
-          total = 0;
-        }
-      }      
-      return total;
+    totalCrown() {
+      return store.state.totalCrown;
+    },
+    totalGold() {
+      return store.state.totalGold;
     }
   },
   methods: {
-    add(item) {
-      store.commit('add', item);
+    add(key) {
+      store.dispatch('add', key); 
     },
     del(item) {
-      store.commit('del', item.id);
+      store.dispatch('del', item.id);
     }
   },
-  mounted() {
-    let self = this;
-    axios.get("https://avalonbot.teso.world/crown/item/")
-      .then(response => {
-        self.fullItems = response.data;
-        self.items = self.fullItems;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  async mounted() {
+    try {
+      const response = await axios.get("https://avalonbot.teso.world/crown/item/");
+      this.fullItems = this.items = response.data;
+    } catch (err) {
+      console.error(err);
+    }
     // setTimeout(() => {
-    // this.fullItems = []
-    // this.items = this.fullItems
+    // this.items = this.fullItems = []
     // }, 1000);
   }
 })

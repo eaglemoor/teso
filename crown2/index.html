@@ -53,13 +53,17 @@
               <span class="text-success">👑 −100</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total (👑)</span>
-              <strong>{{totalPrice}}</strong>
+              <span>{{totalCrown.Title}}</span>
+              <strong>{{totalCrown.Price}}</strong>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between">
+            <!-- <li class="list-group-item d-flex justify-content-between">
               <span>Total (💰) <small>{{totalPrice}}х490</small></span>
               <strong>{{totalPrice * 490}}</strong>
+            </li> -->
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{totalGold.Title}}</span>
+              <strong>{{totalGold.Price}}</strong>
             </li>
           </ul>
 
@@ -142,7 +146,7 @@
                                 {{item.price}}
                               </span>
                             </small></p>
-                          <b-button variant="primary" @click="() => add(item)">Добавить в конзину</b-button>
+                          <b-button variant="primary" @click="() => add(item.key)">Добавить в конзину</b-button>
                         </div>
                       </div>
                     </div>
