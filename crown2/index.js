@@ -18,6 +18,9 @@ const store = new Vuex.Store({
     totalCrown: emptyTotalCrown,
     totalGold: emptyTotalGold,
     message: '',
+    fromUserID: '',
+    toUserID: '',
+    modalShow: false,
   },
   mutations: {
     del({ items }, id) {
@@ -41,17 +44,34 @@ const store = new Vuex.Store({
 
     setMessage(state, message) {
       state.message = message;
+    },
+
+    show(state) {
+      state.modalShow = true;
+    },
+
+    validate(state) {
+      fromUserID = state.fromUserID.trim()
+      toUserID = state.toUserID.trim()
+      if (!fromUserID) {
+        throw new Error("Не заполнено поле fromUserID");
+      } else if (!toUserID) {
+        throw new Error("Не заполнено поле toUserID");
+      } else if (fromUserID === toUserID) {
+        throw new Error("Поля UserID совпадают");
+      }
     }
   },
   actions: {
     async update({ commit }, keys) {
-      items = []
+      commit("validate");
+      items = [];
       totalCrown = emptyTotalCrown;
       totalGold = emptyTotalGold;
       if (keys.length) {
         const newPost = {
-          fromUserID: 'EagleMoor',
-          toUserID: 'Kaba4ok',
+          fromUserID: fromUserID,
+          toUserID: toUserID,
           items: keys,
         };
         const resp = await axios.post(backend + '/basket/', newPost);
@@ -67,9 +87,10 @@ const store = new Vuex.Store({
     async add({ dispatch, state }, key) {      
       keys = [...state.items.map(item => item.key), key];
       try {
-        dispatch("update", keys);
+        await dispatch("update", keys);
       } catch (err) {
-        console.error(err);
+        store.commit("setMessage", err);
+        store.commit("show");
       } 
     },
 
@@ -77,10 +98,10 @@ const store = new Vuex.Store({
       keys = state.items.map(item => item.key);
       keys.splice(id, 1);      
       try {        
-        dispatch("update", keys);
+        await dispatch("update", keys);
       } catch (err) {
-        state.items.splice(0, state.items.length, ...items);
-        console.error(err);
+        store.commit("setMessage", err);
+        store.commit("show");
       }
     },
 
@@ -96,8 +117,8 @@ const store = new Vuex.Store({
       state.totalGold = emptyTotalGold;
       // отправить запрос
       const newPost = {
-        fromUserID: 'EagleMoor',
-        toUserID: 'Kaba4ok',
+        fromUserID: state.fromUserID,
+        toUserID: state.toUserID,
         items: keys,
       };
       
@@ -109,6 +130,7 @@ const store = new Vuex.Store({
         state.totalCrown = savedTotalCrown;
         state.totalGold = savedTotalGold;
         store.commit("setMessage", err);
+        store.commit("show");
       }
     }
   }
@@ -121,7 +143,6 @@ var app = new Vue({
       searchQuery: '',
       fullItems: [],
       items: [],
-      modalShow: false,
     }
   },
   watch: {
@@ -142,18 +163,6 @@ var app = new Vue({
     count() {
 	    return store.state.items.length;
     },
-    selectedItems() {
-      return store.state.items;
-    },
-    totalCrown() {
-      return store.state.totalCrown;
-    },
-    totalGold() {
-      return store.state.totalGold;
-    },
-    message() {
-      return store.state.message;
-    }
   },
   methods: {
     add(key) {
@@ -163,18 +172,23 @@ var app = new Vue({
       store.dispatch('del', item.id);
     },
     buy() {
-      store.commit("setMessage", "Подождите, заказ в работе!");
-      store.dispatch('checkout');
-      this.modalShow = true;
+      try {
+        store.commit("validate");
+        store.commit("setMessage", "Подождите, заказ в работе!");
+        store.dispatch('checkout');
+      } catch(err) {
+        store.commit("setMessage", err);
+      }
+      store.commit("show", true);      
     }
   },
   async mounted() {
     try {
       const response = await axios.get(backend + "/item/");
       this.fullItems = this.items = response.data;
-    } catch (err) {
-      this.modalShow = true;
+    } catch (err) {      
       store.commit("setMessage", err);
+      store.commit("show", true);
     }
   }
 })

@@ -25,7 +25,7 @@
             <span class="badge bg-secondary rounded-pill">{{count}}</span>
           </h4>
           <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm" v-for="item in selectedItems" :key="item.id">
+            <li class="list-group-item d-flex justify-content-between lh-sm" v-for="item in store.state.items" :key="item.id">
               <div :class="{ 'text-success': item.discont}">
                 <h6 class="my-0">{{item.nameRU}}</h6>
                 <small :class="{'text-success': item.discont, 'text-muted': !item.discont}">{{item.nameRU}}</small>
@@ -47,14 +47,14 @@
               <span class="text-success">👑 −100</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <span>{{totalCrown.Title}}</span>
-              <strong>{{totalCrown.Price}}</strong>
+              <span>{{store.state.totalCrown.Title}}</span>
+              <strong>{{store.state.totalCrown.Price}}</strong>
             </li>
 
 
             <li class="list-group-item d-flex justify-content-between">
-              <span>{{totalGold.Title}}</span>
-              <strong>{{totalGold.Price}}</strong>
+              <span>{{store.state.totalGold.Title}}</span>
+              <strong>{{store.state.totalGold.Price}}</strong>
             </li>
           </ul>
 
@@ -73,10 +73,10 @@
                 <div class="input-group">
 
                   <span class="input-group-text">@</span>
-                  <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
-                  <div class="invalid-feedback">
+                  <b-form-input v-model="store.state.fromUserID" placeholder=""></b-form-input>
+                  <!-- <div class="invalid-feedback">
                     Valid first name is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -85,10 +85,11 @@
                 <div class="input-group">
 
                   <span class="input-group-text">@</span>
-                  <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
-                  <div class="invalid-feedback">
+                  <b-form-input v-model="store.state.toUserID" placeholder=""></b-form-input>
+                  <!-- <input type="text" class="form-control" id="firstName" placeholder="" value="" required=""> -->
+                  <!-- <div class="invalid-feedback">
                     Valid first name is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -150,7 +151,7 @@
               <hr class="my-4">
 
               <b-button block variant="primary" size="lg" @click="buy" :disabled="count === 0">Оформить заказ</b-button>
-              <b-modal v-model="modalShow">{{message}}</b-modal>
+              <b-modal v-model="store.state.modalShow">{{store.state.message}}</b-modal>
           </form>
         </div>
       </div>
