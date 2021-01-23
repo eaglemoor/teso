@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vuex@3.6.0/dist/vuex.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 </head>
 
 <body class="bg-light">
@@ -28,12 +29,12 @@
           <form class="needs-validation" novalidate="">
 
             <div class="form-floating mb-3">
-              <input name="fromUserID" type="text" class="form-control" id="fromUserID" placeholder="UserID ваш">
+              <input name="fromUserID" type="text" :class="[{ 'is-invalid': fromUserIDstate }, 'form-control']" id="fromUserID" placeholder="UserID ваш" v-model="fromUserID">
               <label for="fromUserID">UserID ваш</label>
             </div>
 
             <div class="form-floating mb-3">
-              <input name="toUserID" type="text" class="form-control" id="toUserID" placeholder="UserID кому доставить">
+              <input name="toUserID" type="text" :class="[{ 'is-invalid': toUserIDstate }, 'form-control']" placeholder="UserID кому доставить" v-model="store.state.toUserID">
               <label for="toUserID">UserID кому доставить</label>
             </div>
 
@@ -44,8 +45,9 @@
                   <h6 class="my-0">{{item.nameRU}}</h6>
                   <small :class="{'text-success': item.discont, 'text-muted': !item.discont}">{{item.nameRU}}</small>
 
-                  <small style="display: block;padding-top: 0.5em;"><a class="link-danger"
-                      @click="() => del(item)">Удалить</a></small>
+                  <small style="display: block;padding-top: 0.5em;">
+                    <b-link class="link-danger" @click="() => del(item)">Удалить</b-link>
+                  </small>
                 </div>
 
                 <span class="text-muted" style="white-space: nowrap;text-align: right;">👑{{item.discont ||
@@ -56,17 +58,17 @@
               </li>
 
               <li class="list-group-item d-flex justify-content-between">
-                <span>{{store.state.totalCrown.Title}}</span>
-                <strong>{{store.state.totalCrown.Price}}</strong>
+                <span>Total (👑)</span>
+                <strong>{{totalCrown}}</strong>
               </li>
 
               <li class="list-group-item d-flex justify-content-between">
-                <span>{{store.state.totalGold.Title}}</span>
-                <strong>{{store.state.totalGold.Price}}</strong>
+                <span>Total (💰) <small>{{totalCrown}}х{{store.state.crownPrice}}</small></span>
+                <strong>{{totalGold}}</strong>
               </li>
             </ul>
 
-            <b-button block variant="primary" size="lg" style="width: 100%;" @click="buy" :disabled="count === 0">
+            <b-button block variant="primary" size="lg" style="width: 100%;" @click="buy" :disabled="!validateOrder">
               Оформить заказ</b-button>
             <b-modal v-model="store.state.modalShow">{{store.state.message}}</b-modal>
           </form>
@@ -83,24 +85,9 @@
           <div id="cardlist">
             <div class="col-12">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="search" placeholder="🔎 Поиск">
+                <input type="text" class="form-control" id="search" placeholder="🔎 Поиск" v-model="searchQuery">
                 <label for="search" class="search">🔎 Поиск</label>
               </div>
-
-              <div class="bd-search position-relative me-auto" id="search2">
-                <span class="algolia-autocomplete"
-                  style="position: relative; display: inline-block; direction: ltr;width: 100%;"><input type="search"
-                    v-model="searchQuery" class="form-control ds-input" id="search-input" placeholder="Поиск..."
-                    aria-label="Search docs for..." autocomplete="off" data-bd-docs-version="5.0" spellcheck="false"
-                    role="combobox" aria-autocomplete="list" aria-expanded="false"
-                    aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                    style="position: relative; vertical-align: top;"><span class="ds-dropdown-menu" role="listbox"
-                    id="algolia-autocomplete-listbox-0"
-                    style="position: absolute; top: 100%; z-index: 100; left: 0px; right: auto; display: none;">
-                    <div class="ds-dataset-1"></div>
-                  </span></span>
-              </div>
-
             </div>
 
             <div class="col-12 shoplist">
@@ -111,7 +98,7 @@
               </div>
 
 
-              <div class="card mb-3" v-for="item in items" :key="item.key">
+              <div class="card mb-3" v-for="item in items" :key="item.key" v-if="item.top || searchQuery">
                 <div class="row g-0">
                   <div class="col-md-4 card-image">
                     <img v-if="item.image" :src="item.image">
@@ -130,7 +117,7 @@
                             {{item.price}}
                           </span>
                         </small></p>
-                      <b-button variant="primary" @click="() => add(item.key)">Добавить в конзину</b-button>
+                      <b-button variant="primary" @click="() => add(item)">Добавить в конзину</b-button>
                     </div>
                   </div>
                 </div>

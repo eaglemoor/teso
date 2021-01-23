@@ -1,26 +1,23 @@
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
 const backend = "https://avalonbot.teso.world/crown";
-const emptyTotalCrown = {
-  Title: "Total (👑)",
-  Description: "",
-  Price: 0
-}
-const emptyTotalGold = {
-  Title: "Total (💰)",
-  Description: "",
-  Price: 0
+
+const validateUserId = userId => {
+  return userId.trim().length > 0 ? true : false;
 }
 
 const store = new Vuex.Store({
   state: {
     items: [],
-    totalCrown: emptyTotalCrown,
-    totalGold: emptyTotalGold,
+    crownPrice: 0,
     message: '',
     fromUserID: '',
     toUserID: '',
     modalShow: false,
+  },
+  getters: {
+    totalCrown: ({items}) => items.length ? items.map(item => item.discont || item.price).reduce((a, b) => a + b) : 0,
+    totalGold: ({crownPrice}, getters) => getters.totalCrown * crownPrice,
   },
   mutations: {
     del({ items }, id) {
@@ -28,18 +25,10 @@ const store = new Vuex.Store({
       items.splice(i, 1);
     },
 
-    updateItems(state, items) {
-      state.items.splice(0, state.items.length, ...items);
+    update(state, items) {
+      state.items.splice(0, state.items.length, ...items);      
       curId = 0;
       state.items.forEach(element => element.id = curId++);
-    },
-
-    updateTotalCrown(state, totalCrown) {
-      state.totalCrown = totalCrown;
-    },
-
-    updateTotalGold(state, totalGold) {
-      state.totalGold = totalGold;
     },
 
     setMessage(state, message) {
@@ -50,78 +39,53 @@ const store = new Vuex.Store({
       state.modalShow = true;
     },
 
-    validate(state) {
-      fromUserID = state.fromUserID.trim()
-      toUserID = state.toUserID.trim()
-      if (!fromUserID) {
-        throw new Error("Не заполнено поле fromUserID");
-      } else if (!toUserID) {
-        throw new Error("Не заполнено поле toUserID");
-      } else if (fromUserID === toUserID) {
-        throw new Error("Поля UserID совпадают");
-      }
-    }
+    setFromUserID(state, fromUserID) {
+      state.fromUserID = fromUserID;
+    },
+
+    setCrownPrice(state, price) {
+      state.crownPrice = price;
+    },
   },
   actions: {
-    async update({ commit }, keys) {
-      commit("validate");
-      items = [];
-      totalCrown = emptyTotalCrown;
-      totalGold = emptyTotalGold;
-      if (keys.length) {
-        const newPost = {
-          fromUserID: fromUserID,
-          toUserID: toUserID,
-          items: keys,
-        };
-        const resp = await axios.post(backend + '/basket', newPost);
-        items = resp.data.items;
-        totalCrown = resp.data.totalCrown;
-        totalGold = resp.data.totalGold;
+    async setPrice({ commit, state }) {
+      crownPrice = 0;
+      if (validateUserId(state.fromUserID)) {
+        const resp = await axios.post(backend + '/price', { fromUserID: state.fromUserID });
+        crownPrice = resp.data.crownPrice
       }
-      commit("updateItems", items);
-      commit("updateTotalCrown", totalCrown);
-      commit("updateTotalGold", totalGold);
+      commit("setCrownPrice", crownPrice);
     },
 
-    async add({ dispatch, state }, key) {
-      keys = [...state.items.map(item => item.key), key];
-      try {
-        await dispatch("update", keys);
-      } catch (err) {
-        store.commit("setMessage", err);
-        store.commit("show");
-      }
+    async add({ commit, state }, item) {
+      commit("update", [...state.items, item]);
     },
 
-    async del({ dispatch, state }, id) {
-      keys = state.items.map(item => item.key);
-      keys.splice(id, 1);
-      try {
-        await dispatch("update", keys);
-      } catch (err) {
-        store.commit("setMessage", err);
-        store.commit("show");
-      }
+    del({ commit, state }, id) {
+      items = [...state.items];
+      items.splice(id, 1);      
+      commit("update", items);
     },
 
-    async checkout({ state, commit }) {
+    async checkout({state, commit}) {
       // скопировать корзину
       items = [...state.items];
       // очистить корзину
       state.items.splice(0, state.items.length);
       keys = items.map(item => item.key);
-      savedTotalCrown = Object.assign({}, state.totalCrown);
-      savedTotalGold = Object.assign({}, state.totalGold);
-      state.totalCrown = emptyTotalCrown;
-      state.totalGold = emptyTotalGold;
+      savedTotalCrown = state.totalCrown;
+      savedTotalGold = state.totalGold;
+      savedCrownPrice = state.crownPrice;
+      state.totalCrown = 0;
+      state.totalGold = 0;
+      state.crownPrice = 0;
       // отправить запрос
       const newPost = {
-        fromUserID: state.fromUserID,
-        toUserID: state.toUserID,
+        fromUserID: state.fromUserID.trim(),
+        toUserID: state.toUserID.trim(),
         items: keys,
       };
-
+      
       try { // если успешный, очистить корзину, написать успех
         const resp = await axios.post(backend + '/buy', newPost);
         commit("setMessage", resp.data.message);
@@ -143,50 +107,60 @@ var app = new Vue({
       searchQuery: '',
       fullItems: [],
       items: [],
+      fromUserID: '',
     }
   },
   watch: {
-    async searchQuery(searchQuery) {
+    searchQuery(searchQuery) {
       if (!searchQuery) {
         this.items = this.fullItems;
       } else {
-        this.items = this.fullItems.filter(item =>
+        this.items = this.fullItems.filter(item => 
           item.nameRU.toLowerCase().match(searchQuery.toLowerCase()) || item.nameEN.toLowerCase().match(searchQuery.toLowerCase())
         );
       }
+    },
+    fromUserID(fromUserID) {      
+      store.commit("setFromUserID", fromUserID);
+      this.setPrice();
     }
+  },
+  created: function () {
+    this.setPrice = _.debounce(() => store.dispatch("setPrice"), 1000)
   },
   computed: {
     hasNotItems() {
-      return Object.keys(this.fullItems).length === 0;
+      return Object.keys(this.fullItems).length === 0
+    },    
+    validateOrder() {
+      fromUserID = store.state.fromUserID;
+      toUserID = store.state.toUserID;
+      return this.count > 0 && validateUserId(fromUserID) && validateUserId(toUserID);
     },
-    count() {
-      return store.state.items.length;
-    },
+    count: () => store.state.items.length,
+    totalCrown: () => store.getters.totalCrown,
+    totalGold: () => store.getters.totalGold,
+    toUserIDstate: () => !validateUserId(store.state.toUserID),
+    fromUserIDstate: () => !validateUserId(store.state.fromUserID),
   },
   methods: {
-    add(key) {
-      store.dispatch('add', key);
-    },
-    del(item) {
-      store.dispatch('del', item.id);
-    },
+    add: item => store.dispatch('add', item),
+    del: item => store.dispatch('del', item.id),
     buy() {
       try {
-        store.commit("validate");
         store.commit("setMessage", "Подождите, заказ в работе!");
         store.dispatch('checkout');
-      } catch (err) {
+      } catch(err) {
         store.commit("setMessage", err);
       }
-      store.commit("show", true);
+      store.commit("show", true);      
     }
   },
   async mounted() {
     try {
       const response = await axios.get(backend + "/item");
       this.fullItems = this.items = response.data;
-    } catch (err) {
+    } catch (err) {      
       store.commit("setMessage", err);
       store.commit("show", true);
     }
