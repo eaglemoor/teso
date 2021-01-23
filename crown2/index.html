@@ -24,135 +24,120 @@
             <span class="">Ваш заказ</span>
             <span class="badge bg-secondary rounded-pill">{{count}}</span>
           </h4>
-          <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm" v-for="item in store.state.items" :key="item.id">
-              <div :class="{ 'text-success': item.discont}">
-                <h6 class="my-0">{{item.nameRU}}</h6>
-                <small :class="{'text-success': item.discont, 'text-muted': !item.discont}">{{item.nameRU}}</small>
 
-                <small style="display: block;padding-top: 0.5em;"><a href="#" class="link-danger" @click="() => del(item)">Удалить</a></small>
-              </div>
-              
-              <span class="text-muted" style="white-space: nowrap;text-align: right;">👑{{item.discont || item.price}}
-                <br v-if="item.discont">
-                <small v-if="item.discont"><del>{{item.price}}</del></small>
-              </span>
-            </li>            
+          <form class="needs-validation" novalidate="">
 
-            <li class="list-group-item d-flex justify-content-between bg-light">
-              <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
-                <small>ESO2021</small>
-              </div>
-              <span class="text-success">👑 −100</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>{{store.state.totalCrown.Title}}</span>
-              <strong>{{store.state.totalCrown.Price}}</strong>
-            </li>
+            <div class="form-floating mb-3">
+              <input name="fromUserID" type="text" class="form-control" id="fromUserID" placeholder="UserID ваш">
+              <label for="fromUserID">UserID ваш</label>
+            </div>
 
+            <div class="form-floating mb-3">
+              <input name="toUserID" type="text" class="form-control" id="toUserID" placeholder="UserID кому доставить">
+              <label for="toUserID">UserID кому доставить</label>
+            </div>
 
-            <li class="list-group-item d-flex justify-content-between">
-              <span>{{store.state.totalGold.Title}}</span>
-              <strong>{{store.state.totalGold.Price}}</strong>
-            </li>
-          </ul>
+            <ul class="list-group mb-3">
+              <li class="list-group-item d-flex justify-content-between lh-sm" v-for="item in store.state.items"
+                :key="item.id">
+                <div :class="{ 'text-success': item.discont}">
+                  <h6 class="my-0">{{item.nameRU}}</h6>
+                  <small :class="{'text-success': item.discont, 'text-muted': !item.discont}">{{item.nameRU}}</small>
 
-          <form class="card p-2">
+                  <small style="display: block;padding-top: 0.5em;"><a class="link-danger"
+                      @click="() => del(item)">Удалить</a></small>
+                </div>
+
+                <span class="text-muted" style="white-space: nowrap;text-align: right;">👑{{item.discont ||
+                  item.price}}
+                  <br v-if="item.discont">
+                  <small v-if="item.discont"><del>{{item.price}}</del></small>
+                </span>
+              </li>
+
+              <li class="list-group-item d-flex justify-content-between">
+                <span>{{store.state.totalCrown.Title}}</span>
+                <strong>{{store.state.totalCrown.Price}}</strong>
+              </li>
+
+              <li class="list-group-item d-flex justify-content-between">
+                <span>{{store.state.totalGold.Title}}</span>
+                <strong>{{store.state.totalGold.Price}}</strong>
+              </li>
+            </ul>
+
+            <b-button block variant="primary" size="lg" style="width: 100%;" @click="buy" :disabled="count === 0">
+              Оформить заказ</b-button>
+            <b-modal v-model="store.state.modalShow">{{store.state.message}}</b-modal>
+          </form>
+
+          <!-- <form class="card p-2">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="Promo code">
               <button type="submit" class="btn btn-secondary">Redeem</button>
             </div>
-          </form>
+          </form> -->
         </div>
         <div class="col-md-7 col-lg-8">
-          <h4 class="mb-3">Заказ крон</h4>
-          <form class="needs-validation" novalidate="">
-            <div class="row g-3">
-              <div class="col-sm-6"><label for="firstName" class="form-label">UserID ваш</label>
-                <div class="input-group">
+          <h4 class="mb-3">Кронный магазин</h4>
+          <div id="cardlist">
+            <div class="col-12">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="search" placeholder="🔎 Поиск">
+                <label for="search" class="search">🔎 Поиск</label>
+              </div>
 
-                  <span class="input-group-text">@</span>
-                  <b-form-input v-model="store.state.fromUserID" placeholder=""></b-form-input>
-                  <!-- <div class="invalid-feedback">
-                    Valid first name is required.
-                  </div> -->
+              <div class="bd-search position-relative me-auto" id="search2">
+                <span class="algolia-autocomplete"
+                  style="position: relative; display: inline-block; direction: ltr;width: 100%;"><input type="search"
+                    v-model="searchQuery" class="form-control ds-input" id="search-input" placeholder="Поиск..."
+                    aria-label="Search docs for..." autocomplete="off" data-bd-docs-version="5.0" spellcheck="false"
+                    role="combobox" aria-autocomplete="list" aria-expanded="false"
+                    aria-owns="algolia-autocomplete-listbox-0" dir="auto"
+                    style="position: relative; vertical-align: top;"><span class="ds-dropdown-menu" role="listbox"
+                    id="algolia-autocomplete-listbox-0"
+                    style="position: absolute; top: 100%; z-index: 100; left: 0px; right: auto; display: none;">
+                    <div class="ds-dataset-1"></div>
+                  </span></span>
+              </div>
+
+            </div>
+
+            <div class="col-12 shoplist">
+              <div class="row" style="position: relative;padding-left: 50%;margin-bottom: 1em;">
+                <div class="spinner-border text-info" role="status" v-show="hasNotItems">
+                  <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
 
-              <div class="col-sm-6">
-                <label for="lastName" class="form-label">UserID кому доставить</label>
-                <div class="input-group">
 
-                  <span class="input-group-text">@</span>
-                  <b-form-input v-model="store.state.toUserID" placeholder=""></b-form-input>
-                  <!-- <input type="text" class="form-control" id="firstName" placeholder="" value="" required=""> -->
-                  <!-- <div class="invalid-feedback">
-                    Valid first name is required.
-                  </div> -->
-                </div>
-              </div>
-
-              <div id="cardlist">
-                <div class="col-12">
-                  <div class="bd-search position-relative me-auto" id="search">
-                    <span class="algolia-autocomplete"
-                      style="position: relative; display: inline-block; direction: ltr;width: 100%;"><input type="search"
-                        v-model="searchQuery"
-                        class="form-control ds-input" id="search-input" placeholder="Поиск..."
-                        aria-label="Search docs for..." autocomplete="off" data-bd-docs-version="5.0" spellcheck="false"
-                        role="combobox" aria-autocomplete="list" aria-expanded="false"
-                        aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                        style="position: relative; vertical-align: top;"><span class="ds-dropdown-menu" role="listbox"
-                        id="algolia-autocomplete-listbox-0"
-                        style="position: absolute; top: 100%; z-index: 100; left: 0px; right: auto; display: none;">
-                        <div class="ds-dataset-1"></div>
-                      </span></span>
+              <div class="card mb-3" v-for="item in items" :key="item.key">
+                <div class="row g-0">
+                  <div class="col-md-4 card-image">
+                    <img v-if="item.image" :src="item.image">
+                    <img v-else class="card-image-empty">
                   </div>
-
-                </div>
-
-                <div class="col-12">
-                  <div class="row" style="position: relative;padding-left: 50%;margin-bottom: 1em;">
-                    <div class="spinner-border text-info" role="status" v-show="hasNotItems">
-                      <span class="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
-
-                
-                  <div class="card mb-3" v-for="item in items" :key="item.key">
-                    <div class="row g-0">
-                      <div class="col-md-4 card-image">
-                        <img :src="item.image">
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="card-title">{{item.nameRU}}</h5>
-                          <p class="card-text">{{item.nameRU}}<br>{{item.nameEN}}</p>
-                          <p class="card-text"><small class="text-muted">Цена:&nbsp;👑
-                              <span v-if="item.discont">
-                                <del>{{item.price}}</del>
-                                <strong class="text-success">{{item.discont}}</strong>
-                              </span>
-                              <span v-else>
-                                {{item.price}}
-                              </span>
-                            </small></p>
-                          <b-button variant="primary" @click="() => add(item.key)">Добавить в конзину</b-button>
-                        </div>
-                      </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">{{item.nameRU}}</h5>
+                      <p class="card-text">{{item.nameRU}}<br>{{item.nameEN}}</p>
+                      <p class="card-text"><small class="text-muted">Цена:&nbsp;👑
+                          <span v-if="item.discont">
+                            <del>{{item.price}}</del>
+                            <strong class="text-success">{{item.discont}}</strong>
+                          </span>
+                          <span v-else>
+                            {{item.price}}
+                          </span>
+                        </small></p>
+                      <b-button variant="primary" @click="() => add(item.key)">Добавить в конзину</b-button>
                     </div>
                   </div>
                 </div>
-
-
               </div>
+            </div>
 
-              <hr class="my-4">
-
-              <b-button block variant="primary" size="lg" @click="buy" :disabled="count === 0">Оформить заказ</b-button>
-              <b-modal v-model="store.state.modalShow">{{store.state.message}}</b-modal>
-          </form>
+          </div>
         </div>
       </div>
     </main>
@@ -179,21 +164,15 @@
       overflow: hidden;
     }
 
-    #search::after {
-      position: absolute;
-      top: .4rem;
-      right: .4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 1.5rem;
-      padding-right: .25rem;
-      padding-left: .25rem;
-      font-size: .75rem;
-      color: #6c757d;
-      content: "🔎 Search";
-      border: 1px solid #dee2e6;
-      border-radius: .125rem
+    .card-image-empty {
+      margin-left: 20% !important;
+      opacity: 0.5;
+      content: url("crown.png");
+    }
+
+    .shoplist {
+      max-height: 800px;
+      overflow-y: auto;
     }
   </style>
 

@@ -29,7 +29,7 @@ const store = new Vuex.Store({
     },
 
     updateItems(state, items) {
-      state.items.splice(0, state.items.length, ...items);      
+      state.items.splice(0, state.items.length, ...items);
       curId = 0;
       state.items.forEach(element => element.id = curId++);
     },
@@ -74,7 +74,7 @@ const store = new Vuex.Store({
           toUserID: toUserID,
           items: keys,
         };
-        const resp = await axios.post(backend + '/basket/', newPost);
+        const resp = await axios.post(backend + '/basket', newPost);
         items = resp.data.items;
         totalCrown = resp.data.totalCrown;
         totalGold = resp.data.totalGold;
@@ -84,20 +84,9 @@ const store = new Vuex.Store({
       commit("updateTotalGold", totalGold);
     },
 
-    async add({ dispatch, state }, key) {      
+    async add({ dispatch, state }, key) {
       keys = [...state.items.map(item => item.key), key];
       try {
-        await dispatch("update", keys);
-      } catch (err) {
-        store.commit("setMessage", err);
-        store.commit("show");
-      } 
-    },
-
-    async del({ dispatch, state }, id) {
-      keys = state.items.map(item => item.key);
-      keys.splice(id, 1);      
-      try {        
         await dispatch("update", keys);
       } catch (err) {
         store.commit("setMessage", err);
@@ -105,7 +94,18 @@ const store = new Vuex.Store({
       }
     },
 
-    async checkout({state, commit}) {
+    async del({ dispatch, state }, id) {
+      keys = state.items.map(item => item.key);
+      keys.splice(id, 1);
+      try {
+        await dispatch("update", keys);
+      } catch (err) {
+        store.commit("setMessage", err);
+        store.commit("show");
+      }
+    },
+
+    async checkout({ state, commit }) {
       // скопировать корзину
       items = [...state.items];
       // очистить корзину
@@ -121,9 +121,9 @@ const store = new Vuex.Store({
         toUserID: state.toUserID,
         items: keys,
       };
-      
+
       try { // если успешный, очистить корзину, написать успех
-        const resp = await axios.post(backend + '/buy/', newPost);
+        const resp = await axios.post(backend + '/buy', newPost);
         commit("setMessage", resp.data.message);
       } catch (err) { // если неуспешный, востановить корзину, написать ошибку
         state.items.splice(0, state.items.length, ...items);
@@ -150,7 +150,7 @@ var app = new Vue({
       if (!searchQuery) {
         this.items = this.fullItems;
       } else {
-        this.items = this.fullItems.filter(item => 
+        this.items = this.fullItems.filter(item =>
           item.nameRU.toLowerCase().match(searchQuery.toLowerCase()) || item.nameEN.toLowerCase().match(searchQuery.toLowerCase())
         );
       }
@@ -161,12 +161,12 @@ var app = new Vue({
       return Object.keys(this.fullItems).length === 0;
     },
     count() {
-	    return store.state.items.length;
+      return store.state.items.length;
     },
   },
   methods: {
     add(key) {
-      store.dispatch('add', key); 
+      store.dispatch('add', key);
     },
     del(item) {
       store.dispatch('del', item.id);
@@ -176,17 +176,17 @@ var app = new Vue({
         store.commit("validate");
         store.commit("setMessage", "Подождите, заказ в работе!");
         store.dispatch('checkout');
-      } catch(err) {
+      } catch (err) {
         store.commit("setMessage", err);
       }
-      store.commit("show", true);      
+      store.commit("show", true);
     }
   },
   async mounted() {
     try {
-      const response = await axios.get(backend + "/item/");
+      const response = await axios.get(backend + "/item");
       this.fullItems = this.items = response.data;
-    } catch (err) {      
+    } catch (err) {
       store.commit("setMessage", err);
       store.commit("show", true);
     }
