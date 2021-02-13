@@ -2,6 +2,8 @@
 
 ## DPS
 
+**ESO Идеальная ротация. Обзор модификации Perfect Weave** <a href="https://www.youtube.com/watch?v=cwdFbhlUe-U&feature=youtu.be" target="_blank">https://www.youtube.com/watch?v=cwdFbhlUe-U</a>
+
 **TESO DD Лекция** - <a href="https://www.youtube.com/watch?v=nxelWisBP7k" target="_blank">https://www.youtube.com/watch?v=nxelWisBP7k</a>
 > Подробная лекция по формированию DPS для DD
 
